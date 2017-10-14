@@ -1,0 +1,7 @@
+[package]
+name = "unicorn-gdbserver"
+version = "0.1.0"
+authors = ["isra17 <isra017@gmail.com>"]
+
+[dependencies]
+unicorn = "0.7.0"
