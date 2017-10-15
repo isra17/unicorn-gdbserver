@@ -5,3 +5,5 @@ authors = ["isra17 <isra017@gmail.com>"]
 
 [dependencies]
 unicorn = "0.7.0"
+hex-slice = "0.1.0"
+

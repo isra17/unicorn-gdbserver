@@ -2,6 +2,7 @@
 name = "unicorn-gdbserver"
 version = "0.1.0"
 dependencies = [
+ "hex-slice 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "unicorn 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -29,6 +30,11 @@ dependencies = [
 [[package]]
 name = "gcc"
 version = "0.3.54"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "hex-slice"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -157,6 +163,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum bitflags 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)" = "1370e9fc2a6ae53aea8b7a5110edbd08836ed87c88736dfabccade1c2b44bff4"
 "checksum build-helper 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "bdce191bf3fa4995ce948c8c83b4640a1745457a149e73c6db75b4ffe36aad5f"
 "checksum gcc 0.3.54 (registry+https://github.com/rust-lang/crates.io-index)" = "5e33ec290da0d127825013597dbdfc28bee4964690c7ce1166cbc2a7bd08b1bb"
+"checksum hex-slice 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "25af315558525036ed693b483e8218aa5dbb8aa9a1a825570a2d2fa356540de0"
 "checksum kernel32-sys 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "7507624b29483431c0ba2d82aece8ca6cdba9382bff4ddd0f7490560c056098d"
 "checksum libc 0.2.32 (registry+https://github.com/rust-lang/crates.io-index)" = "56cce3130fd040c28df6f495c8492e5ec5808fb4c9093c310df02b0c8f030148"
 "checksum libunicorn-sys 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "83183d2018b6984989cfb6674b7ac8069deacdf70735c951c4e08b82269fb256"

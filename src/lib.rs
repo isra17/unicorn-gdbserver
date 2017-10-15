@@ -1,9 +1,28 @@
+extern crate hex_slice;
 extern crate unicorn;
 
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream, ToSocketAddrs};
 
 const HEXCHARS: &'static [u8] = b"0123456789abcdef";
+
+pub trait ToHex {
+    fn to_hex(&self) -> String;
+}
+
+impl ToHex for [u8] {
+    fn to_hex(&self) -> String {
+        let mut v = Vec::with_capacity(self.len() * 2);
+        for &byte in self {
+            v.push(HEXCHARS[(byte >> 4) as usize]);
+            v.push(HEXCHARS[(byte & 0xf) as usize]);
+        }
+
+        unsafe {
+            String::from_utf8_unchecked(v)
+        }
+    }
+}
 
 pub struct GDBSession<'a> {
     client : GDBStream,
@@ -43,13 +62,15 @@ impl<'a> GDBSession<'a> {
                         b'g' => self.read_all_regs(),
                         b'H' => b"OK".to_vec(),
                         b'm' => self.handle_read_memory(&packet),
-                        b'q' => self.handle_query(String::from_utf8(packet.into()).unwrap()).to_vec(),
+                        b'q' => self.handle_query(String::from_utf8(packet.clone().into()).unwrap()).to_vec(),
                         b's' => b"S05".to_vec(),
                         _ => {
-                            println!("Unknown command: {:?}", String::from_utf8(packet));
+                            println!("Unknown command: {:?}", String::from_utf8(packet.clone()));
                             vec![]
                         }
                     };
+
+                    println!("{:?} => {:?}", String::from_utf8(packet), String::from_utf8(response.clone()));
                     self.client.write_packet(&response)?;
                 },
 
@@ -87,9 +108,13 @@ impl<'a> GDBSession<'a> {
     fn handle_read_memory(&self, packet: &[u8]) -> Vec<u8> {
         let cmd = String::from_utf8(packet[1..].to_vec()).expect("Cannot decode packet");
         let mut split = cmd.split(',');
-        let _address = u64::from_str_radix(split.next().unwrap(), 16).unwrap();
-        let length = u64::from_str_radix(split.next().unwrap(), 16).unwrap();
-        return std::iter::repeat(b'0').take(length as usize * 2).collect();
+        let address = u64::from_str_radix(split.next().unwrap(), 16).unwrap();
+        let length = usize::from_str_radix(split.next().unwrap(), 16).unwrap();
+
+        match self.uc.mem_read(address, length) {
+            Ok(data) =>data.to_hex().into_bytes(),
+            Err(_) => b"E01".to_vec(),
+        }
     }
 }
 
