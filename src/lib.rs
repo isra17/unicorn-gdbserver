@@ -1,10 +1,29 @@
-extern crate hex_slice;
 extern crate unicorn;
 
+use unicorn::x86_const::RegisterX86;
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream, ToSocketAddrs};
 
 const HEXCHARS: &'static [u8] = b"0123456789abcdef";
+
+const REGISTERS: &'static [i32] = &[
+    RegisterX86::EAX as i32,
+    RegisterX86::ECX as i32,
+    RegisterX86::EDX as i32,
+    RegisterX86::EBX as i32,
+    RegisterX86::ESP as i32,
+    RegisterX86::EBP as i32,
+    RegisterX86::ESI as i32,
+    RegisterX86::EDI as i32,
+    RegisterX86::EIP as i32,
+    RegisterX86::EFLAGS as i32,
+    RegisterX86::CS as i32,
+    RegisterX86::SS as i32,
+    RegisterX86::DS as i32,
+    RegisterX86::ES as i32,
+    RegisterX86::FS as i32,
+    RegisterX86::GS as i32,
+];
 
 pub trait ToHex {
     fn to_hex(&self) -> String;
@@ -101,8 +120,12 @@ impl<'a> GDBSession<'a> {
     }
 
     fn read_all_regs(&self) -> Vec<u8> {
-        let regs = std::iter::repeat("0").take(16 * 8).collect::<String>();
-        return regs.into_bytes();
+        let mut buffer = String::with_capacity(REGISTERS.len()*8);
+        for reg in REGISTERS {
+            let value = (self.uc.reg_read(*reg).unwrap() as u32).to_be();
+            buffer += &format!("{:08x}", value);
+        }
+        return buffer.into_bytes();
     }
 
     fn handle_read_memory(&self, packet: &[u8]) -> Vec<u8> {
